@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Utwórz nowe zgłoszenie</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; padding: 40px 16px; color: #1a1a2e; }
+  h1 { font-size: 22px; font-weight: 500; color: #1a1a2e; margin-bottom: 24px; }
+  .card { background: #fff; border-radius: 8px; border: 1px solid #e2e5ea; padding: 28px; max-width: 620px; margin: 0 auto; }
+  .section-label { font-size: 14px; font-weight: 500; color: #1a1a2e; margin-bottom: 14px; }
+  .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field-full { margin-bottom: 12px; }
+  input[type="text"], input[type="email"], input[type="tel"], textarea {
+    width: 100%; padding: 10px 12px; font-size: 14px; border: 1px solid #d1d5db;
+    border-radius: 6px; background: #fff; color: #1a1a2e; outline: none;
+    font-family: inherit; transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: #4a6cf7; box-shadow: 0 0 0 3px rgba(74,108,247,0.12); }
+  input.error, textarea.error { border-color: #e24b4a; }
+  .error-msg { font-size: 12px; color: #a32d2d; margin-top: 4px; display: none; }
+  .error-msg.visible { display: block; }
+  textarea { resize: vertical; min-height: 160px; line-height: 1.5; }
+  .toolbar { display: flex; gap: 6px; padding: 8px 10px; border: 1px solid #d1d5db; border-bottom: none; border-radius: 6px 6px 0 0; background: #f8f9fb; }
+  .toolbar button { background: none; border: none; cursor: pointer; padding: 4px 6px; border-radius: 4px; font-size: 13px; color: #444; line-height: 1; }
+  .toolbar button:hover { background: #e5e7eb; }
+  .toolbar .sep { width: 1px; background: #d1d5db; margin: 2px 2px; }
+  .rich-area { border-radius: 0 0 6px 6px !important; border-top: none !important; }
+  .attachments-box { border: 1px dashed #d1d5db; border-radius: 6px; padding: 20px; text-align: center; color: #6b7280; font-size: 13px; cursor: pointer; transition: border-color 0.15s; }
+  .attachments-box:hover { border-color: #4a6cf7; }
+  .attachments-box a { color: #4a6cf7; text-decoration: none; }
+  input[type="file"] { display: none; }
+  .divider { border: none; border-top: 1px solid #e5e7eb; margin: 20px 0; }
+  .submit-row { display: flex; justify-content: flex-end; margin-top: 24px; }
+  .btn-submit { background: #4a6cf7; color: #fff; border: none; border-radius: 6px; padding: 10px 28px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .btn-submit:hover { background: #3a5ce6; }
+  .btn-submit:disabled { background: #9ba8f5; cursor: not-allowed; }
+  .success-banner { display: none; background: #eaf3de; border: 1px solid #97c459; border-radius: 6px; padding: 14px 18px; color: #3b6d11; font-size: 14px; margin-top: 16px; }
+  .success-banner.visible { display: block; }
+</style>
+</head>
+<body>
+<h1>Utwórz nowe zgłoszenie</h1>
+<div class="card">
+  <form id="ticketForm" novalidate>
+    <p class="section-label">Informacje ogólne</p>
+    <div class="field-full">
+      <input type="text" id="title" name="title" placeholder="Tytuł zgłoszenia" autocomplete="off">
+      <div class="error-msg" id="title-err">Podaj tytuł zgłoszenia.</div>
+    </div>
+    <div class="field-group">
+      <div>
+        <input type="email" id="email" name="email" placeholder="Adres e-mail" autocomplete="email">
+        <div class="error-msg" id="email-err">Podaj poprawny adres e-mail.</div>
+      </div>
+      <div>
+        <input type="tel" id="phone" name="phone" placeholder="Numer telefonu" autocomplete="tel">
+      </div>
+    </div>
+    <hr class="divider">
+    <p class="section-label">Szczegóły zgłoszenia</p>
+    <div class="field-full">
+      <div class="toolbar">
+        <button type="button" onclick="fmt('bold')"><b>B</b></button>
+        <button type="button" onclick="fmt('italic')"><i>I</i></button>
+        <button type="button" onclick="fmt('strikeThrough')"><s>S</s></button>
+        <button type="button" onclick="fmt('underline')"><u>U</u></button>
+        <div class="sep"></div>
+        <button type="button" onclick="fmt('insertUnorderedList')">&#8226;&#8226;</button>
+        <button type="button" onclick="fmt('insertOrderedList')">1.</button>
+        <div class="sep"></div>
+        <button type="button" onclick="fmt('justifyLeft')">&#8676;</button>
+        <button type="button" onclick="fmt('justifyCenter')">&#8596;</button>
+        <button type="button" onclick="fmt('justifyRight')">&#8677;</button>
+      </div>
+      <div id="description" contenteditable="true" class="rich-area"
+        style="width:100%;min-height:160px;padding:10px 12px;font-size:14px;border:1px solid #d1d5db;border-radius:0 0 6px 6px;outline:none;line-height:1.6;color:#1a1a2e;"
+        data-placeholder="Dodaj opis, załącz pliki (przeciągnij je) lub wklej obrazy ze schowka">
+      </div>
+      <div class="error-msg" id="desc-err">Opisz problem.</div>
+    </div>
+    <hr class="divider">
+    <p class="section-label">Załączniki</p>
+    <label class="attachments-box" for="fileInput">
+      &#8679; Przeciągnij pliki tutaj, aby je przesłać, lub <a onclick="document.getElementById('fileInput').click();event.preventDefault();">wybierz plik</a>
+      <input type="file" id="fileInput" multiple onchange="showFiles(this)">
+    </label>
+    <div id="fileList" style="margin-top:8px;font-size:13px;color:#6b7280;"></div>
+    <div class="submit-row">
+      <button type="submit" class="btn-submit" id="submitBtn">Wyślij</button>
+    </div>
+  </form>
+  <div class="success-banner" id="successBanner">
+    ✓ Zgłoszenie zostało wysłane. Wkrótce skontaktujemy się z Tobą.
+  </div>
+</div>
+<style>
+  [contenteditable]:empty:before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; }
+</style>
+<script>
+function fmt(cmd) { document.execCommand(cmd, false, null); document.getElementById('description').focus(); }
+function showFiles(input) {
+  const list = document.getElementById('fileList');
+  list.innerHTML = Array.from(input.files).map(f => '&#128206; ' + f.name).join('<br>');
+}
+function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function setError(fieldId, errId, show) {
+  document.getElementById(fieldId).classList.toggle('error', show);
+  document.getElementById(errId).classList.toggle('visible', show);
+}
+document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const title = document.getElementById('title').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const desc = document.getElementById('description').innerText.trim();
+  let valid = true;
+  setError('title', 'title-err', !title); if (!title) valid = false;
+  setError('email', 'email-err', !validateEmail(email)); if (!validateEmail(email)) valid = false;
+  setError('description', 'desc-err', !desc); if (!desc) valid = false;
+  if (!valid) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Wysyłanie...';
+  const payload = {
+    title: title,
+    email: email,
+    phone: document.getElementById('phone').value.trim(),
+    description: document.getElementById('description').innerHTML
+  };
+  const PA_URL = 'WSTAW_URL_POWER_AUTOMATE_TUTAJ';
+  try {
+    const res = await fetch(PA_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (res.ok || res.status === 202) {
+      document.getElementById('ticketForm').style.display = 'none';
+      document.getElementById('successBanner').classList.add('visible');
+    } else {
+      alert('Błąd wysyłania. Spróbuj ponownie.');
+      btn.disabled = false; btn.textContent = 'Wyślij';
+    }
+  } catch(err) {
+    alert('Błąd połączenia. Sprawdź internet i spróbuj ponownie.');
+    btn.disabled = false; btn.textContent = 'Wyślij';
+  }
+});
+document.getElementById('email').addEventListener('input', function() {
+  if (validateEmail(this.value.trim())) setError('email', 'email-err', false);
+});
+</script>
+</body>
+</html>
